@@ -1,10 +1,11 @@
 {
   "name": "twitter-interface",
   "version": "0.0.1",
-  "description": "Use Twitter's REST API to create an interface that displays a user's recent DM's, tweets, and friends.",
+  "description": "Using Twitter's REST API to create an interface that displays a user's recent DM's, tweets, and friends.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "keywords": [
     "twitter",
