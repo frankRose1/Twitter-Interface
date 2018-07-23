@@ -9,16 +9,19 @@ const express = require('express');
 const path = require('path');
 const port = process.env.PORT || 7777;
 const routes = require('./routes/index');
-const {consumer_key, consumer_secret, access_token, access_token_secret} = require('./config');
+
 const app = express();
+
+// static files
+app.use(express.static(__dirname + '/public'));
 
 // set view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-// static files
-app.use(express.static(__dirname + '/public'));
 
-app.use(routes);
+app.get('/', routes);
+
+//error handlers will go here
 
 app.listen(port, () => {
     console.log(`App is running on port ${port}`);
