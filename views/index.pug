@@ -2,6 +2,7 @@ extends layout
 
 include mixins/_tweetDisplay
 include mixins/_friendsDisplay
+include mixins/_messagesDisplay
 
 block content
   header.circle--header
@@ -40,11 +41,12 @@ block content
           h2 Timeline
       .grid-33
         .app--section--heading
-          strong 129
+          //- strong= userProfileData.followers_count
           h2 Following
       .grid-33
         .app--section--heading
           h2 Direct Messages
 
     //- +tweetDisplay(tweetsData, userProfileData)
-    +friendsDisplay(friendsData)
+    //- +friendsDisplay(friendsData)
+    +messagesDisplay(messagesData)

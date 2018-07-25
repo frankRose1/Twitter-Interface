@@ -40,3 +40,20 @@ exports.getFriends = async (req, res) => {
     // res.json(friendsData);
     res.render('index', {title: 'Twitter Interface', friendsData});
 };
+
+//this endpoint returns all Direct Message events (both sent and received) within the last 30 days
+//** will be i nreverse chronological order */
+    // message body
+    // date the message was sent
+    // time the message was sent
+exports.getDirectMessages = async (req, res) => {
+    const messagesData = [];
+    const directMessages = await T.get('direct_messages/events/list', {count: 5});
+    directMessages.data.events.forEach(message => {
+        const {created_timestamp, message_create:{message_data:{text}} } = message;
+        const timeSent = moment(new Date(parseInt(created_timestamp))).fromNow();
+        messagesData.push({timeSent, text});
+    });
+    // res.json(messagesData);
+    res.render('index', {title: "Twitter Client", messagesData});
+};
