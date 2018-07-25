@@ -36,6 +36,7 @@ exports.getFriends = async (req, res) => {
         friendsData.push({name, screen_name, profile_image_url});
     });
 
+    console.log(friends.resp.statusCode);
     // res.json(friendsData);
     res.render('index', {title: 'Twitter Interface', friendsData});
 };
