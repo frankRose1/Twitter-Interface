@@ -26,3 +26,16 @@ exports.getTweets = async (req, res) => {
     // res.json(tweets);
     res.render("index", {title: "Twitter Interface", tweetsData, userProfileData});
 };
+
+exports.getFriends = async (req, res) => {
+    //need profile image, real name, screen name
+    const friendsData = [];
+    const friends = await T.get('friends/list', {count: 5});
+    friends.data.users.forEach(friend => {
+        const {name, screen_name, profile_image_url} = friend;
+        friendsData.push({name, screen_name, profile_image_url});
+    });
+
+    // res.json(friendsData);
+    res.render('index', {title: 'Twitter Interface', friendsData});
+};
