@@ -5,6 +5,6 @@ const {catchErrors} = require('../handlers/errorHandlers'); //wrap the async fun
 
 // router.get('/', catchErrors(tweetsController.getTweets));
 // router.get('/', catchErrors(tweetsController.getFriends));
-router.get('/', catchErrors(tweetsController.getDirectMessages));
+router.get('/', catchErrors(tweetsController.getTwitterData));
 
 module.exports = router;
