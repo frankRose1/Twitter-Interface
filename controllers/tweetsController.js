@@ -3,19 +3,21 @@ const moment = require('moment');
 const config = require('../config');
 const T = new Twit(config);
 
-//TODO pass the userProfileData back as well, certain parts of the pug need it
+//TODO followers count may need to be changed to "following"
+    //Also get the BAnner URL from this endpoint for exceeds
+    //background URL will be NULL if one is not set
 function extractTweetsData(tweets){
     const tweetsData = [];
     //get profile info
-    const {name, screen_name, followers_count, profile_image_url} = tweets.data[0].user;
-    const userProfileData = {name, screen_name, followers_count, profile_image_url};
+    const {name, screen_name, friends_count, profile_image_url_https, profile_banner_url} = tweets.data[0].user;
+    const userProfileData = {name, screen_name, friends_count, profile_image_url_https, profile_banner_url};
 
     tweets.data.forEach( tweet => {
         const {text, retweet_count, favorite_count, created_at} = tweet;
         const formattedDate = moment(new Date(created_at)).fromNow();
         tweetsData.push( {text, retweet_count, favorite_count, formattedDate} );
     });
-    return tweetsData;
+    return [tweetsData, userProfileData];
 }
 
 function extractFriendsData(friends){
@@ -27,7 +29,6 @@ function extractFriendsData(friends){
     return friendsData;
 }
 
-// TODO reverse the order of the messagesData objects
 //TODO if there are no DM's in the last 30 days, tell the user somehow
 function extractMessageData(messages){
     const messagesData = [];
@@ -36,10 +37,14 @@ function extractMessageData(messages){
         const timeSent = moment(new Date(parseInt(created_timestamp))).fromNow();
         messagesData.push({timeSent, text});
     });
-    return messagesData;
+    //reverse messages to show the more recent at the bottom
+    const reversedMessages = [];
+    for (let i = messagesData.length - 1; i >= 0; i--) {
+        reversedMessages.push(messagesData[i]);
+    }
+    return reversedMessages;
 }
 
-//call all the endpoints with promise.all
 exports.getTwitterData = async (req, res) => {
     const twitterData = await Promise.all([
         T.get('statuses/user_timeline', {count: 5}),
@@ -49,13 +54,13 @@ exports.getTwitterData = async (req, res) => {
     //deconstruct the response
     const [tweets, friends, messages] = twitterData;
     //extract the data needed
-    const tweetsData = extractTweetsData(tweets);
+    const [tweetsData, userProfileData] = extractTweetsData(tweets);
     const friendsData = extractFriendsData(friends);
     const messagesData = extractMessageData(messages);
     //pass it all to the PUG
     console.log(res.statusCode);
     // res.json({tweetsData, friendsData, messagesData});
-    res.render('index', {title: 'Twitter Interface', tweetsData, friendsData, messagesData});
+    res.render('index', {title: 'Twitter Interface', tweetsData, friendsData, messagesData, userProfileData});
 };
 
 //** this endpoint also has a lot of information about the user profile that wil be needed */
@@ -67,6 +72,7 @@ exports.getTwitterData = async (req, res) => {
 exports.getTweets = async (req, res) => {
     const tweetsData = [];
     // const tweets = await T.get('statuses/user_timeline', {count: 5});
+    res.json(tweets);
     //get profile info
     const {name, screen_name, followers_count, profile_image_url} = tweets.data[0].user;
     const userProfileData = {name, screen_name, followers_count, profile_image_url};
@@ -76,8 +82,7 @@ exports.getTweets = async (req, res) => {
         const formattedDate = moment(new Date(created_at)).fromNow();
         tweetsData.push( {text, retweet_count, favorite_count, formattedDate} );
     });
-    
-    // res.json(tweets);
+    res.json(tweets);
     res.render("index", {title: "Twitter Interface", tweetsData, userProfileData});
 };
 
@@ -110,3 +115,5 @@ exports.getDirectMessages = async (req, res) => {
     // res.json(messagesData);
     res.render('index', {title: "Twitter Client", messagesData});
 };
+
+// TODO POST route that will update the user's twitter Status(post a new tweet from the interface)

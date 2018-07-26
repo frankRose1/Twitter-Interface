@@ -6,8 +6,8 @@ mixin tweetDisplay(tweets = [], profileData={})
           li
             strong.app--tweet--timestamp= tweet.formattedDate
             a.app--tweet--author
-              .app--avatar(style=`background-image: url(${profileData.profile_image_url})`)
-                img(src=`${profileData.profile_image_url}`)
+              .app--avatar(style=`background-image: url(${profileData.profile_image_url_https})`)
+                img(src=`${profileData.profile_image_url_https}`)
               h4= profileData.name
               |  @#{profileData.screen_name}
             p= tweet.text
