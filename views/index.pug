@@ -5,7 +5,7 @@ include mixins/_friendsDisplay
 include mixins/_messagesDisplay
 
 block content
-  header.circle--header(style=`background-image: url(${!userProfileData.profile_banner_url ? '' : userProfileData.profile_banner_url})`)
+  header.circle--header(style=`background-image: url(${userProfileData.profile_banner_url ? userProfileData.profile_banner_url : ''})`)
     .bounds
       .circle--fluid
         .circle--fluid--cell

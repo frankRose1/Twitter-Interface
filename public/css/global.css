@@ -2500,3 +2500,15 @@ input[type="reset"],
 input[type="button"] {
   padding: 16px 20px;
 }
+
+/* Error Page Styles */
+.errors--container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.errors--container i {
+  font-size: 85px;
+}

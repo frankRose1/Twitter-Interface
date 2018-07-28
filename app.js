@@ -3,6 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const port = process.env.PORT || 7777;
 const routes = require('./routes/index');
+const errorHandlers = require('./handlers/errorHandlers');
 
 const app = express();
 
@@ -15,10 +16,14 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use('/', routes);
 
-//TODO SET UP ERROR HANDLERS!!!
-    // Add an error page to application, 
+//TODO SET UP ERROR HANDLERS!!! 
     // so that if the user navigates to a non-existent route, the user will see a friendly message rendered, instead of the default error code.
-//error handlers will go here
+//error handler middleware goes after all routes
+//404 handler
+app.use(errorHandlers.notFound);
+
+//render the error page
+app.use(errorHandlers.renderError);
 
 app.listen(port, () => {
     console.log(`App is running on port ${port}`);
