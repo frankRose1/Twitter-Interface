@@ -4,8 +4,6 @@ const twitterController = require('../controllers/twitterController'); //outsour
 const {catchErrors} = require('../handlers/errorHandlers'); //wrap the async functions in error handlers
 
 router.get('/', catchErrors(twitterController.getTwitterData));
-// router.get('/', catchErrors(twitterController.viewDms));
-//update status from the interface
-router.post('/update', catchErrors(twitterController.updateStatus));
+router.post('/update', catchErrors(twitterController.updateStatus)); //update twitter status from the interface
 
 module.exports = router;

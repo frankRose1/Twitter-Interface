@@ -27,6 +27,7 @@ function extractFriendsData(friends){
     return friendsData;
 }
 
+//user ID's need to be extracted here as well to make an API request for all users in the DM's
 function extractMessageData(messages){
     const messagesData = [];
     messages.data.events.forEach(message => {
@@ -34,9 +35,9 @@ function extractMessageData(messages){
         const timeSent = moment(new Date(parseInt(created_timestamp))).fromNow();
         messagesData.push({timeSent, text, sender_id});
     });
-    //reverse messages to show the more recent at the bottom
-    const reversedMessages = messagesData.reverse();
-    return reversedMessages;
+    //filter out duplicate ID's to avoid uneccessary API calls
+    const userIDs = [...new Set(messagesData.map(message => message.sender_id)) ];
+    return [messagesData, userIDs];
 }
 
 exports.getTwitterData = async (req, res) => {
@@ -50,32 +51,26 @@ exports.getTwitterData = async (req, res) => {
     //extract the data needed
     const [tweetsData, userProfileData] = extractTweetsData(tweets);
     const friendsData = extractFriendsData(friends);
-    const messagesData = extractMessageData(messages);
-    console.log(res.statusCode);
-    //pass it all to the PUG
+    const [messagesData, userIDs] = extractMessageData(messages);
+    //get info on the users in the DMs
+    const dmSenderInfo = await T.get('users/lookup', {user_id: userIDs.join(',')} );
+    //compare the ID's from messagesData and the dmSenderInfo response.
+        //if they are equal attach the image and name to the respective message in messagesData
+    messagesData.forEach(message => {
+        dmSenderInfo.data.forEach(sender =>{
+            if (message.sender_id === sender.id_str) {
+                message.userName = sender.name;
+                message.userPhoto = sender.profile_image_url_https;
+            }
+        });
+    });
+    messagesData.reverse(); //to show the more recent DM's at the bottom
     res.render('index', {title: 'Twitter Interface', tweetsData, friendsData, messagesData, userProfileData});
 };
 
 exports.updateStatus = async (req, res) => {
     const status = req.body.status; 
     const response = await T.post('statuses/update', {status});
-    console.log(response.resp.statusCode);
     res.redirect('/');
 };
 
-//TODO finish getting the necessary user info to display it in the DMS and factor it in to the existing function
-    //need to use the sender_id: to make additional requests in the DM's
-    //need to compare the sender ID with my own to see if it matches -> will matter once we render the LI's
-exports.viewDms = async (req, res) => {
-    const idArr = []; //holds the ID's of the DM sender
-    const dms = await T.get('direct_messages/events/list', {count: 5});
-    dms.data.events.forEach(dm => {
-        const {message_create:{ sender_id} } = dm;
-        idArr.push(sender_id);
-    });
-    //filter duplicates out of the array so that we dont make uneccesary API calls
-    const filteredIds = [...new Set(idArr)];
-    //user_id can be a comma seperated list up to 100 values
-    const dmSenderInfo = await  T.get('users/lookup', {user_id: filteredIds.join(',')} );
-    res.json(dmSenderInfo);
-}

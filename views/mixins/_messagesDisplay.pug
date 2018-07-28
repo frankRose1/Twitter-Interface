@@ -10,8 +10,8 @@ mixin messagesDisplay(messagesData, userInfo)
             each message in messagesData
               if message.sender_id !== userInfo.id_str
                 li.app--message
-                  .app--avatar(style='background-image: url(../../public/images/f-spore.png)')
-                    img(src='../../public/images/f-spore.png')
+                  .app--avatar(style=`background-image: url(${message.userPhoto})`)
+                    img(src=`${message.userPhoto}`)
                   p.app--message--text= message.text
                   p.app--message--timestamp= message.timeSent
               else
