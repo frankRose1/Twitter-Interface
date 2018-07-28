@@ -1,4 +1,4 @@
-mixin messagesDisplay(messagesData)
+mixin messagesDisplay(messagesData, userInfo)
   .grid-33
     .app--section
       ul.app--message--list
@@ -8,8 +8,16 @@ mixin messagesDisplay(messagesData)
             a Jill Spore
           ul.app--message--conversation
             each message in messagesData
-              li.app--message
-                .app--avatar(style='background-image: url(../../public/images/f-spore.png)')
-                  img(src='../../public/images/f-spore.png')
-                p.app--message--text= message.text
-                p.app--message--timestamp= message.timeSent
+              if message.sender_id !== userInfo.id_str
+                li.app--message
+                  .app--avatar(style='background-image: url(../../public/images/f-spore.png)')
+                    img(src='../../public/images/f-spore.png')
+                  p.app--message--text= message.text
+                  p.app--message--timestamp= message.timeSent
+              else
+                li.app--message--me
+                  .app--avatar(style=`background-image: url(${userProfileData.profile_image_url_https})`)
+                    img(src=`${userProfileData.profile_image_url_https}`)
+                  p.app--message--text
+                    | #{message.text}
+                  p.app--message--timestamp= message.timeSent

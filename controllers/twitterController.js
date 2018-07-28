@@ -7,8 +7,8 @@ const T = new Twit(config);
 function extractTweetsData(tweets){
     const tweetsData = [];
     //get user profile info
-    const {name, screen_name, friends_count, profile_image_url_https, profile_banner_url} = tweets.data[0].user;
-    const userProfileData = {name, screen_name, friends_count, profile_image_url_https, profile_banner_url};
+    const {name, screen_name, friends_count, profile_image_url_https, profile_banner_url, id_str} = tweets.data[0].user;
+    const userProfileData = {name, screen_name, friends_count, profile_image_url_https, profile_banner_url, id_str};
     //push data about each tweet to an array
     tweets.data.forEach( tweet => {
         const {text, retweet_count, favorite_count, created_at} = tweet;
@@ -27,14 +27,12 @@ function extractFriendsData(friends){
     return friendsData;
 }
 
-//TODO if there are no DM's in the last 30 days, tell the user somehow
-//TODO in the PUG file, "conversation with ..."
 function extractMessageData(messages){
     const messagesData = [];
     messages.data.events.forEach(message => {
-        const {created_timestamp, message_create:{message_data:{text}} } = message;
+        const {created_timestamp, message_create:{message_data:{text}}, message_create:{ sender_id} } = message;
         const timeSent = moment(new Date(parseInt(created_timestamp))).fromNow();
-        messagesData.push({timeSent, text});
+        messagesData.push({timeSent, text, sender_id});
     });
     //reverse messages to show the more recent at the bottom
     const reversedMessages = messagesData.reverse();
@@ -58,11 +56,26 @@ exports.getTwitterData = async (req, res) => {
     res.render('index', {title: 'Twitter Interface', tweetsData, friendsData, messagesData, userProfileData});
 };
 
-// For each update attempt, the update text is compared with the authenticating user’s recent Tweets. 
-// Any attempt that would result in duplication will be blocked, resulting in a 403 error. A user cannot submit the same status twice in a row.
 exports.updateStatus = async (req, res) => {
     const status = req.body.status; 
     const response = await T.post('statuses/update', {status});
     console.log(response.resp.statusCode);
     res.redirect('/');
 };
+
+//TODO finish getting the necessary user info to display it in the DMS and factor it in to the existing function
+    //need to use the sender_id: to make additional requests in the DM's
+    //need to compare the sender ID with my own to see if it matches -> will matter once we render the LI's
+exports.viewDms = async (req, res) => {
+    const idArr = []; //holds the ID's of the DM sender
+    const dms = await T.get('direct_messages/events/list', {count: 5});
+    dms.data.events.forEach(dm => {
+        const {message_create:{ sender_id} } = dm;
+        idArr.push(sender_id);
+    });
+    //filter duplicates out of the array so that we dont make uneccesary API calls
+    const filteredIds = [...new Set(idArr)];
+    //user_id can be a comma seperated list up to 100 values
+    const dmSenderInfo = await  T.get('users/lookup', {user_id: filteredIds.join(',')} );
+    res.json(dmSenderInfo);
+}

@@ -1076,7 +1076,7 @@ select:focus {
 .circle--select {
   position: relative;
   width: 100%;
-  border-sizing: border-box;
+  box-sizing: border-box;
   border: 1px solid #aeddfa;
   height: 50px;
   border-radius: 8px;
@@ -2508,7 +2508,24 @@ input[type="button"] {
   padding: 20px;
   text-align: center;
 }
+.errors--container h2 {font-size: 3.4rem;}
+.errors--container h3 {font-size: 4.5rem;}
+.errors--container p{font-size: 2rem;}
+.errors--container a {
+  text-decoration: none;
+  font-weight: bold;
+  color: #1da1f2;
+  margin-left: 5px;
+}
 
-.errors--container i {
+.error-status-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 25px 0;
+}
+
+.error-status-container i { 
+  margin-left: 10px;
   font-size: 85px;
 }
