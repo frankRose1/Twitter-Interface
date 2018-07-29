@@ -3,7 +3,6 @@ const moment = require('moment');
 const config = require('../config');
 const T = new Twit(config);
 
-//this endpoint has useful info about the users profile as well
 function extractTweetsData(tweets){
     const tweetsData = [];
     //get user profile info
@@ -55,11 +54,10 @@ exports.getTwitterData = async (req, res) => {
     //get info on the users in the DMs
     const dmSenderInfo = await T.get('users/lookup', {user_id: userIDs.join(',')} );
     //compare the ID's from messagesData and the dmSenderInfo response.
-        //if they are equal attach the image and name to the respective message in messagesData
+        //if they are equal attach the image to the respective message in messagesData
     messagesData.forEach(message => {
         dmSenderInfo.data.forEach(sender =>{
             if (message.sender_id === sender.id_str) {
-                message.userName = sender.name;
                 message.userPhoto = sender.profile_image_url_https;
             }
         });

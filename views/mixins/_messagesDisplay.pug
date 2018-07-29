@@ -4,8 +4,7 @@ mixin messagesDisplay(messagesData, userInfo)
       ul.app--message--list
         li
           h3
-            | Conversation with 
-            a Jill Spore
+            | Your Recent Messages
           ul.app--message--conversation
             each message in messagesData
               if message.sender_id !== userInfo.id_str

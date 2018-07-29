@@ -2,7 +2,6 @@
 //if there is an error .catch will pass it to next immediately
 exports.catchErrors = (fn) => {
     return function(req, res, next) {
-        //this would be the async function
         return fn(req, res, next).catch(next);
     };
 };
@@ -18,5 +17,5 @@ exports.notFound = (req, res, next) => {
 exports.renderError = (err, req, res, next) => {
     //res.status sets the HTTP status for the response
     res.status(err.status || 500);
-    res.render('error', {message: err.message, status: res.status});
+    res.render('error', {message: err.message, status: err.status});
 };
