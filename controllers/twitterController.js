@@ -7,7 +7,14 @@ function extractTweetsData(tweets){
     const tweetsData = [];
     //get user profile info
     const {name, screen_name, friends_count, profile_image_url_https, profile_banner_url, id_str} = tweets.data[0].user;
-    const userProfileData = {name, screen_name, friends_count, profile_image_url_https, profile_banner_url, id_str};
+    const userProfileData = {
+                                name, 
+                                screen_name, 
+                                friends_count,
+                                profile_image_url_https, 
+                                profile_banner_url, 
+                                id_str
+                            };
     //push data about each tweet to an array
     tweets.data.forEach( tweet => {
         const {text, retweet_count, favorite_count, created_at} = tweet;

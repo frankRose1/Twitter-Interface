@@ -16,6 +16,7 @@ exports.notFound = (req, res, next) => {
 //pass the errors here and render them
 exports.renderError = (err, req, res, next) => {
     //res.status sets the HTTP status for the response
+    console.log(err);
     res.status(err.status || 500);
     res.render('error', {message: err.message, status: err.status});
 };
